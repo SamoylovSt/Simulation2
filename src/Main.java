@@ -4,11 +4,7 @@ public class Main {
 
         Simulation mapRenderer = new Simulation();
 
-
         mapRenderer.startSimulation();
-
-
-
 
     }
 }

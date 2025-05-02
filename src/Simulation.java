@@ -19,7 +19,7 @@ public class Simulation {
     }
 
 
-    public void initStartAction(Map map, HashSet rabits) {
+    public void initStartAction(Map map, HashSet rabits, HashSet wolfs) {
         Random random = new Random();
 
         int COLUMN = random.nextInt(MAP_SIZE) + 1;//random.nextInt(20) + 1;
@@ -36,6 +36,8 @@ public class Simulation {
         int ROW6 = random.nextInt(MAP_SIZE) + 1;
         int COLUMN7 = random.nextInt(MAP_SIZE) + 1;
         int ROW7 = random.nextInt(MAP_SIZE) + 1;
+        int COLUMN8 = random.nextInt(MAP_SIZE) + 1;
+        int ROW8 = random.nextInt(MAP_SIZE) + 1;
 
         Grass grass2 = new Grass(new Coordinates(ROW, COLUMN));
         Grass grass3 = new Grass(new Coordinates(ROW2, COLUMN2));
@@ -53,30 +55,35 @@ public class Simulation {
         map.setEntyty(herbivore1.getCoordinates(), herbivore1);
         rabits.add(herbivore1);
 
-//        Predator predator = new Predator(new Coordinates(COLUMN7, ROW7));
-//        map.setEntyty(predator.getCoordinates(), predator);
+
+        Herbivore herbivore2 = new Herbivore(new Coordinates(COLUMN8, ROW8));
+        map.setEntyty(herbivore2.getCoordinates(), herbivore2);
+        rabits.add(herbivore2);
+
+        Predator predator = new Predator(new Coordinates(COLUMN7, ROW7));
+        map.setEntyty(predator.getCoordinates(), predator);
+        wolfs.add(predator);
+
+
     }
 
-    public void turnActions(int turnCount, Map map, HashSet rabits, Predator predator) {
+    public void turnActions(int turnCount, Map map, HashSet rabits, HashSet wolfs) {
         rabbitsWalk(turnCount, map, rabits);
         setRandomEntyty(map, turnCount);
         render(map);
 
         map.reMap(nextTurn(map.map));
 
-        Coordinates predatorTarget = poisk(predator, map);
-        predator.makeMove(predator, predatorTarget, map);
-        predator.eatHerbivore(predatorTarget, predator.getCoordinates(), map, rabits);
+        wolfsWalk(map,wolfs,rabits);
+
     }
 
     public void startSimulation() {
         Map map = new Map();
         HashSet<Herbivore> rabits = new HashSet<>();
+        HashSet<Predator> wolfs = new HashSet<>();
 
-        initStartAction(map, rabits);
-
-        Predator predator = new Predator(new Coordinates(10, 10));
-        map.setEntyty(predator.getCoordinates(), predator);
+        initStartAction(map, rabits,wolfs);
 
         int turnCount = 0;
         int interval = 500;
@@ -90,7 +97,9 @@ public class Simulation {
             }
             turnCount++;
 
-            turnActions(turnCount, map, rabits, predator);
+
+            turnActions(turnCount, map, rabits,wolfs);
+
             System.out.println(turnCount);
 
         }
@@ -142,6 +151,18 @@ public class Simulation {
         }
     }
 
+
+    public void wolfsWalk(Map map, HashSet<Predator> wolfs, HashSet<Herbivore> rabits) {
+
+        for (Predator wolf : wolfs) {
+            Coordinates wolfTarget = poisk(wolf, map);
+
+            wolf.makeMove(wolf, wolfTarget, map);
+
+            wolf.eatHerbivore(wolfTarget, wolf.getCoordinates(), map, rabits);
+
+        }
+    }
 
     public void setRandomEntyty(Map map, int turtcount) {
         Random random = new Random();
@@ -231,6 +252,8 @@ public class Simulation {
         }
         return newMap;
     }
+
+
 
 
 }

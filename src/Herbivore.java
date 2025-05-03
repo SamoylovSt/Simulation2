@@ -29,6 +29,39 @@ public class Herbivore extends Creature {
     }
 
 
+    public void randomWalk(Map map, Herbivore herbivore) {
+        int[][] directions = {
+                {+1, +0}, {+0, -1}, {+1, +1}, {+1, -1},
+                {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
+        };
+
+        for (int i = 0; i < directions.length; i++) {
+            int newRow = directions[i][1];
+            int newCol = directions[i][0];
+            Coordinates nextCoordinates = new Coordinates(herbivore.getCoordinates().COLUMN + newCol, herbivore.getCoordinates().ROW + newRow);
+
+            if(nextCoordinates.COLUMN>15){
+                break;
+            }
+            if(nextCoordinates.COLUMN<1){
+                break;
+            }
+            if(nextCoordinates.ROW>15){
+                break;
+            }
+            if(nextCoordinates.ROW<1){
+                break;
+            }
+
+
+            if (!map.emptyCoordainates(nextCoordinates)) {
+                herbivore.coordinates = nextCoordinates;
+            }
+        }
+    }
+
+
+
     public void makeMove(Herbivore herbivore, Coordinates targetCoordinates, Map map) {//
         int dx = (int) Math.signum(targetCoordinates.COLUMN - herbivore.coordinates.COLUMN);
         int dy = (int) Math.signum(targetCoordinates.ROW - herbivore.coordinates.ROW);

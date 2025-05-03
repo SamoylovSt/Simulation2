@@ -56,9 +56,9 @@ public class Simulation {
         rabits.add(herbivore1);
 
 
-        Herbivore herbivore2 = new Herbivore(new Coordinates(COLUMN8, ROW8));
-        map.setEntyty(herbivore2.getCoordinates(), herbivore2);
-        rabits.add(herbivore2);
+//        Herbivore herbivore2 = new Herbivore(new Coordinates(COLUMN8, ROW8));
+//        map.setEntyty(herbivore2.getCoordinates(), herbivore2);
+//        rabits.add(herbivore2);
 
         Predator predator = new Predator(new Coordinates(COLUMN7, ROW7));
         map.setEntyty(predator.getCoordinates(), predator);
@@ -74,9 +74,11 @@ public class Simulation {
 
         map.reMap(nextTurn(map.map));
 
-        wolfsWalk(map,wolfs,rabits);
+        wolfsWalk(map, wolfs, rabits);
 
     }
+
+
 
     public void startSimulation() {
         Map map = new Map();
@@ -97,7 +99,6 @@ public class Simulation {
             }
             turnCount++;
 
-
             turnActions(turnCount, map, rabits,wolfs);
 
             System.out.println(turnCount);
@@ -117,7 +118,7 @@ public class Simulation {
                 {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
         };
         int clearCootdCount = 0;
-        if (turnCount % 2 == 0) {
+        if (turnCount % 3 == 0) {
             for (int i = 0; i < nearestCootdinates.length; i++) {
                 int newRow = nearestCootdinates[i][1];
                 int newCol = nearestCootdinates[i][0];
@@ -148,6 +149,9 @@ public class Simulation {
             rabit.makeMove(rabit, rabitTarget, map);
             rabit.eatGrass(rabitTarget, rabit.getCoordinates(), map);
 
+            // rabit.randomWalk(map, rabit);
+
+
         }
     }
 
@@ -174,7 +178,7 @@ public class Simulation {
                 {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
         };
         int clearCootdCount = 0;
-        if (turtcount % 1 == 0) {
+        if (turtcount % 1  == 0) {
             for (int i = 0; i < nearestCootdinates.length; i++) {
                 int newRow = nearestCootdinates[i][1];
                 int newCol = nearestCootdinates[i][0];
@@ -220,26 +224,33 @@ public class Simulation {
         while (!queue.isEmpty()) {
 
             Coordinates nextCoordinates = queue.removeFirst();
-            if (m.emptyCoordainates(nextCoordinates) && creature instanceof Herbivore && m.getEntyty(nextCoordinates) instanceof Grass) {
-                targetCoordinates = new Coordinates(nextCoordinates.COLUMN, nextCoordinates.ROW);
-                break;
-            }
-            if (m.emptyCoordainates(nextCoordinates) && creature instanceof Predator && m.getEntyty(nextCoordinates) instanceof Herbivore) {
-                targetCoordinates = new Coordinates(nextCoordinates.COLUMN, nextCoordinates.ROW);
-                break;
-            } else {
-                visited.add(nextCoordinates);
+            boolean checkBorderMap = nextCoordinates.COLUMN < 15 && nextCoordinates.COLUMN > 0 && nextCoordinates.ROW < 15 && nextCoordinates.ROW > 0;
+            if (checkBorderMap) {
+                if (m.emptyCoordainates(nextCoordinates) && creature instanceof Herbivore && m.getEntyty(nextCoordinates) instanceof Grass) {
+                    targetCoordinates = new Coordinates(nextCoordinates.COLUMN, nextCoordinates.ROW);
+                    break;
+                }
+                if (m.emptyCoordainates(nextCoordinates) && creature instanceof Predator && m.getEntyty(nextCoordinates) instanceof Herbivore) {
+                    targetCoordinates = new Coordinates(nextCoordinates.COLUMN, nextCoordinates.ROW);
+                    break;
+                } else {
+                    visited.add(nextCoordinates);
 
-                for (int i = 0; i < directions.length; i++) {
-                    int newRow = directions[i][1];
-                    int newCol = directions[i][0];
-                    Coordinates temp = new Coordinates(nextCoordinates.COLUMN + newCol, nextCoordinates.ROW + newRow);
-                    if (!visited.contains(temp)) {
-                        queue.add(temp);
+                    for (int i = 0; i < directions.length; i++) {
+                        int newRow = directions[i][1];
+                        int newCol = directions[i][0];
+                        Coordinates temp = new Coordinates(nextCoordinates.COLUMN + newCol, nextCoordinates.ROW + newRow);
+                        if (!visited.contains(temp)) {
+                            queue.add(temp);
+                        }
                     }
                 }
             }
+
+
         }
+
+
         return targetCoordinates;
     }
 

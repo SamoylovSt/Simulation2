@@ -1,12 +1,14 @@
-
-
 public class Herbivore extends Creature {
     private final String color;
     private Coordinates coordinates;
 
+    public Herbivore(Coordinates coordinates) {
+        this.coordinates = coordinates;
+        this.color = "\uD83D\uDC30";
+    }
+
     @Override
     public String getColor() {
-
         return this.color;
     }
 
@@ -15,9 +17,8 @@ public class Herbivore extends Creature {
         return this.coordinates;
     }
 
-    public Herbivore(Coordinates coordinates) {
-        this.coordinates = coordinates;
-        this.color = "\uD83D\uDC30";
+    public Coordinates setCoordinates(Coordinates coordinates) {
+        return this.coordinates = coordinates;
     }
 
     public void eatGrass(Coordinates targetCoordinates, Coordinates herbCoordinates, Map map) {
@@ -25,9 +26,7 @@ public class Herbivore extends Creature {
 
             map.deleteEntyty(targetCoordinates);
         }
-
     }
-
 
     public void randomWalk(Map map, Herbivore herbivore) {
         int[][] directions = {
@@ -40,16 +39,16 @@ public class Herbivore extends Creature {
             int newCol = directions[i][0];
             Coordinates nextCoordinates = new Coordinates(herbivore.getCoordinates().COLUMN + newCol, herbivore.getCoordinates().ROW + newRow);
 
-            if(nextCoordinates.COLUMN>15){
+            if (nextCoordinates.COLUMN > 15) {
                 break;
             }
-            if(nextCoordinates.COLUMN<1){
+            if (nextCoordinates.COLUMN < 1) {
                 break;
             }
-            if(nextCoordinates.ROW>15){
+            if (nextCoordinates.ROW > 15) {
                 break;
             }
-            if(nextCoordinates.ROW<1){
+            if (nextCoordinates.ROW < 1) {
                 break;
             }
 
@@ -60,46 +59,9 @@ public class Herbivore extends Creature {
         }
     }
 
-
-
-    public void makeMove(Herbivore herbivore, Coordinates targetCoordinates, Map map) {//
-        int dx = (int) Math.signum(targetCoordinates.COLUMN - herbivore.coordinates.COLUMN);
-        int dy = (int) Math.signum(targetCoordinates.ROW - herbivore.coordinates.ROW);
-
-        Entyty nextTurnentyty = map.getEntyty(new Coordinates(herbivore.coordinates.COLUMN + dx, herbivore.coordinates.ROW + dy));
-
-
-        if (herbivore.coordinates.COLUMN + dx > 15) {
-            dx = 0;
-        }
-        if (herbivore.coordinates.COLUMN + dx < 1) {
-            dx = 0;
-        }
-        if (herbivore.coordinates.ROW + dy > 15) {
-            dy = 0;
-        }
-        if (herbivore.coordinates.ROW + dy < 1) {
-            dy = 0;
-        }
-
-        if (nextTurnentyty instanceof Rock) {
-            if (nextTurnentyty.getCoordinates().COLUMN > herbivore.coordinates.COLUMN) {
-                herbivore.coordinates = new Coordinates(herbivore.coordinates.COLUMN, herbivore.coordinates.ROW + 1);
-            }
-            if (nextTurnentyty.getCoordinates().ROW > herbivore.coordinates.ROW) {
-                herbivore.coordinates = new Coordinates(herbivore.coordinates.COLUMN + 1, herbivore.coordinates.ROW);
-            }
-            if (nextTurnentyty.getCoordinates().ROW < herbivore.coordinates.ROW) {
-                herbivore.coordinates = new Coordinates(herbivore.coordinates.COLUMN - 1, herbivore.coordinates.ROW);
-            }
-            if (nextTurnentyty.getCoordinates().COLUMN < herbivore.coordinates.COLUMN) {
-                herbivore.coordinates = new Coordinates(herbivore.coordinates.COLUMN - 1, herbivore.coordinates.ROW + 1);
-            }
-
-        }
-        herbivore.coordinates = new Coordinates(herbivore.coordinates.COLUMN + dx, herbivore.coordinates.ROW + dy);
+    @Override
+    public void makeMove(Creature creature, Coordinates targetCoordinates, Map map) {
+        super.makeMove(creature, targetCoordinates, map);
     }
-
-
 }
 

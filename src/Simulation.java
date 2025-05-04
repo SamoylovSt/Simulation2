@@ -68,13 +68,14 @@ public class Simulation {
     }
 
     public void turnActions(int turnCount, Map map, HashSet rabits, HashSet wolfs) {
-        rabbitsWalk(turnCount, map, rabits);
+
         setRandomEntyty(map, turnCount);
         render(map);
+        wolfsWalk(map, wolfs, rabits);
 
         map.reMap(nextTurn(map.map));
 
-        wolfsWalk(map, wolfs, rabits);
+        rabbitsWalk(turnCount, map, rabits);
 
     }
 
@@ -88,7 +89,7 @@ public class Simulation {
         initStartAction(map, rabits,wolfs);
 
         int turnCount = 0;
-        int interval = 500;
+        int interval = 700;
         boolean condition = true;
 
         while (condition) {
@@ -144,7 +145,7 @@ public class Simulation {
         }
 
         for (Herbivore rabit : rabits) {
-            Coordinates rabitTarget = poisk(rabit, map);
+            Coordinates rabitTarget = search(rabit, map);
 
             rabit.makeMove(rabit, rabitTarget, map);
             rabit.eatGrass(rabitTarget, rabit.getCoordinates(), map);
@@ -159,7 +160,7 @@ public class Simulation {
     public void wolfsWalk(Map map, HashSet<Predator> wolfs, HashSet<Herbivore> rabits) {
 
         for (Predator wolf : wolfs) {
-            Coordinates wolfTarget = poisk(wolf, map);
+            Coordinates wolfTarget = search(wolf, map);
 
             wolf.makeMove(wolf, wolfTarget, map);
 
@@ -178,7 +179,7 @@ public class Simulation {
                 {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
         };
         int clearCootdCount = 0;
-        if (turtcount % 1  == 0) {
+        if (turtcount % 2  == 0) {
             for (int i = 0; i < nearestCootdinates.length; i++) {
                 int newRow = nearestCootdinates[i][1];
                 int newCol = nearestCootdinates[i][0];
@@ -202,7 +203,7 @@ public class Simulation {
     }
 
 
-    public Coordinates poisk(Entyty creature, Map m) {
+    public Coordinates search(Entyty creature, Map m) {
 
         LinkedList<Coordinates> queue = new LinkedList<>();
         int[][] directions = {
@@ -224,6 +225,7 @@ public class Simulation {
         while (!queue.isEmpty()) {
 
             Coordinates nextCoordinates = queue.removeFirst();
+
             boolean checkBorderMap = nextCoordinates.COLUMN < 15 && nextCoordinates.COLUMN > 0 && nextCoordinates.ROW < 15 && nextCoordinates.ROW > 0;
             if (checkBorderMap) {
                 if (m.emptyCoordainates(nextCoordinates) && creature instanceof Herbivore && m.getEntyty(nextCoordinates) instanceof Grass) {
@@ -246,11 +248,7 @@ public class Simulation {
                     }
                 }
             }
-
-
         }
-
-
         return targetCoordinates;
     }
 

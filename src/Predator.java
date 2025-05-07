@@ -22,19 +22,45 @@ public class Predator extends Creature {
 
     public Predator(Coordinates coordinates) {
         this.coordinates = coordinates;
-        this.color = "\uD83D\uDC3A";
+        this.color = Sprites.PREDATOR_COLOR;
     }
 
-    public void eatHerbivore(Coordinates targetCoordinates, Coordinates predatorCoordinates, Map map, HashSet<Herbivore> rabits) {
-        if (predatorCoordinates.equals(targetCoordinates) && map.getEntyty(targetCoordinates) instanceof Herbivore) {
-            rabits.remove(map.getEntyty(targetCoordinates));
-            map.deleteEntyty(targetCoordinates);
+    public void eatHerbivore(Coordinates targetCoordinates, Coordinates predatorCoordinates, GameMap gameMap, HashSet<Herbivore> rabits) {
+        if (predatorCoordinates.equals(targetCoordinates) && gameMap.getEntyty(targetCoordinates) instanceof Herbivore) {
+            rabits.remove(gameMap.getEntyty(targetCoordinates));
+            gameMap.deleteEntyty(targetCoordinates);
         }
     }
 
     @Override
-    public void makeMove(Creature creature, Coordinates targetCoordinates, Map map) {
-        super.makeMove(creature, targetCoordinates, map);
+    public void makeMove(Creature creature, Coordinates targetCoordinates, GameMap gameMap) {
+        int nextColumn = (int) Math.signum(targetCoordinates.getCOLUMN() - creature.getCoordinates().getCOLUMN());
+        int nextRow = (int) Math.signum(targetCoordinates.getROW() - creature.getCoordinates().getROW());
+
+        Entity entityInNextCell = gameMap.getEntyty(new Coordinates(creature.getCoordinates().getCOLUMN() + nextColumn, creature.getCoordinates().getROW() + nextRow));
+        if (creature.getCoordinates().getCOLUMN() + nextColumn > 15 ||
+                creature.getCoordinates().getCOLUMN() + nextColumn < 1) {
+            nextColumn = 0;
+        }
+        if (creature.getCoordinates().getROW() + nextRow > 15 ||
+                creature.getCoordinates().getROW() + nextRow < 1) {
+            nextRow = 0;
+        }
+        if (entityInNextCell instanceof Stone) {
+            if (entityInNextCell.getCoordinates().getCOLUMN() > creature.getCoordinates().getCOLUMN()) {
+                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN(), creature.getCoordinates().getROW() + 1));
+            }
+            if (entityInNextCell.getCoordinates().getROW() > creature.getCoordinates().getROW()) {
+                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN() + 1, creature.getCoordinates().getROW()));
+            }
+            if (entityInNextCell.getCoordinates().getROW() < creature.getCoordinates().getROW()) {
+                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN() - 1, creature.getCoordinates().getROW()));
+            }
+            if (entityInNextCell.getCoordinates().getCOLUMN() < creature.getCoordinates().getCOLUMN()) {
+                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN() - 1, creature.getCoordinates().getROW() + 1));
+            }
+        }
+        creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN() + nextColumn, creature.getCoordinates().getROW() + nextRow));
     }
 
 

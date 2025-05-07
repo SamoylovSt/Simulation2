@@ -1,12 +1,20 @@
 import java.util.Objects;
 
 public class Coordinates {
-    public final Integer COLUMN;
-    public final Integer ROW;
+    private final Integer COLUMN;
+    private final Integer ROW;
 
     public Coordinates(Integer COLUMN, Integer ROW) {
-        this.COLUMN = COLUMN; //row
-        this.ROW = ROW; //column
+        this.COLUMN = COLUMN;
+        this.ROW = ROW;
+    }
+
+    public Integer getCOLUMN() {
+        return COLUMN;
+    }
+
+    public  Integer getROW(){
+        return ROW;
     }
 
     @Override

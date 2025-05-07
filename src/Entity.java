@@ -1,4 +1,4 @@
-abstract public class Entyty {
+abstract public class Entity {
     private String color;
     private Coordinates coordinates;
 
@@ -6,9 +6,7 @@ abstract public class Entyty {
         return this.color;
     }
 
-
     public Coordinates getCoordinates() {
         return this.coordinates;
     }
-
 }

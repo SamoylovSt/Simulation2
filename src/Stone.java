@@ -1,7 +1,6 @@
-public class Rock extends Entyty {
+public class Stone extends Entity {
     private final String color;
     private final Coordinates coordinates;
-
 
     @Override
     public String getColor() {
@@ -12,11 +11,9 @@ public class Rock extends Entyty {
         return coordinates;
     }
 
-    public Rock(Coordinates coordinates) {
+    public Stone(Coordinates coordinates) {
         this.coordinates = coordinates;
-        this.color = "\uD83E\uDDF1";
+        this.color = Sprites.STONE_COLOR;
     }
-
-
 }
 

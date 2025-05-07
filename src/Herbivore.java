@@ -4,7 +4,7 @@ public class Herbivore extends Creature {
 
     public Herbivore(Coordinates coordinates) {
         this.coordinates = coordinates;
-        this.color = "\uD83D\uDC30";
+        this.color = Sprites.HERBIVORE_COLOR;
     }
 
     @Override
@@ -21,47 +21,42 @@ public class Herbivore extends Creature {
         return this.coordinates = coordinates;
     }
 
-    public void eatGrass(Coordinates targetCoordinates, Coordinates herbCoordinates, Map map) {
-        if (herbCoordinates.equals(targetCoordinates) && map.getEntyty(targetCoordinates) instanceof Grass) {
+    public void eatGrass(Coordinates targetCoordinates, Coordinates herbCoordinates, GameMap gameMap) {
+        if (herbCoordinates.equals(targetCoordinates) && gameMap.getEntyty(targetCoordinates) instanceof Grass) {
 
-            map.deleteEntyty(targetCoordinates);
-        }
-    }
-
-    public void randomWalk(Map map, Herbivore herbivore) {
-        int[][] directions = {
-                {+1, +0}, {+0, -1}, {+1, +1}, {+1, -1},
-                {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
-        };
-
-        for (int i = 0; i < directions.length; i++) {
-            int newRow = directions[i][1];
-            int newCol = directions[i][0];
-            Coordinates nextCoordinates = new Coordinates(herbivore.getCoordinates().COLUMN + newCol, herbivore.getCoordinates().ROW + newRow);
-
-            if (nextCoordinates.COLUMN > 15) {
-                break;
-            }
-            if (nextCoordinates.COLUMN < 1) {
-                break;
-            }
-            if (nextCoordinates.ROW > 15) {
-                break;
-            }
-            if (nextCoordinates.ROW < 1) {
-                break;
-            }
-
-
-            if (!map.emptyCoordainates(nextCoordinates)) {
-                herbivore.coordinates = nextCoordinates;
-            }
+            gameMap.deleteEntyty(targetCoordinates);
         }
     }
 
     @Override
-    public void makeMove(Creature creature, Coordinates targetCoordinates, Map map) {
-        super.makeMove(creature, targetCoordinates, map);
+    public void makeMove(Creature creature, Coordinates targetCoordinates, GameMap gameMap) {
+        int nextColumn = (int) Math.signum(targetCoordinates.getCOLUMN() - creature.getCoordinates().getCOLUMN());
+        int nextRow = (int) Math.signum(targetCoordinates.getROW() - creature.getCoordinates().getROW());
+
+        Entity entityInNextCell = gameMap.getEntyty(new Coordinates(creature.getCoordinates().getCOLUMN() + nextColumn, creature.getCoordinates().getROW() + nextRow));
+        if (creature.getCoordinates().getCOLUMN() + nextColumn > 15 ||
+                creature.getCoordinates().getCOLUMN() + nextColumn < 1) {
+            nextColumn = 0;
+        }
+        if (creature.getCoordinates().getROW() + nextRow > 15 ||
+                creature.getCoordinates().getROW() + nextRow < 1) {
+            nextRow = 0;
+        }
+        if (entityInNextCell instanceof Stone) {
+            if (entityInNextCell.getCoordinates().getCOLUMN() > creature.getCoordinates().getCOLUMN()) {
+                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN(), creature.getCoordinates().getROW() + 1));
+            }
+            if (entityInNextCell.getCoordinates().getROW() > creature.getCoordinates().getROW()) {
+                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN() + 1, creature.getCoordinates().getROW()));
+            }
+            if (entityInNextCell.getCoordinates().getROW() < creature.getCoordinates().getROW()) {
+                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN() - 1, creature.getCoordinates().getROW()));
+            }
+            if (entityInNextCell.getCoordinates().getCOLUMN() < creature.getCoordinates().getCOLUMN()) {
+                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN() - 1, creature.getCoordinates().getROW() + 1));
+            }
+        }
+        creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN() + nextColumn, creature.getCoordinates().getROW() + nextRow));
     }
 }
 

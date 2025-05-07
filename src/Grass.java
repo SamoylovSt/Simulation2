@@ -1,5 +1,5 @@
-public class Grass extends Entyty {
-    private final String color;
+public class Grass extends Entity {
+    private final String color ;
     private final Coordinates coordinates;
 
     @Override
@@ -12,8 +12,7 @@ public class Grass extends Entyty {
     }
 
     public Grass(Coordinates coordinates) {
-
-        this.color = "☘\uFE0F";
+        this.color =Sprites.GRASS_COLOR; ;
         this.coordinates = coordinates;
     }
 }

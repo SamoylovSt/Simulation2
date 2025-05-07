@@ -1,17 +1,18 @@
 import java.util.HashMap;
+import java.util.Map;
 
-public class Map {
-    HashMap<Coordinates, Entyty> map = new HashMap<>();
+public class GameMap {
+    Map<Coordinates, Entity> map = new HashMap<>();
 
-    public void reMap(HashMap<Coordinates, Entyty> newMap) {
+    public void reMap(HashMap<Coordinates, Entity> newMap) {
         this.map = newMap;
     }
 
-    public void setEntyty(Coordinates coordinates, Entyty entyty) {
-        map.put(coordinates, entyty);
+    public void setEntyty(Coordinates coordinates, Entity entity) {
+        map.put(coordinates, entity);
     }
 
-    public Entyty getEntyty(Coordinates coordinates) {
+    public Entity getEntyty(Coordinates coordinates) {
         return map.get(coordinates);
     }
 

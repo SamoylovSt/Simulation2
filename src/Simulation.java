@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Simulation {
-    public final int MAP_SIZE = 15;
+    public static int MAP_SIZE = 15;
 
     public void render(GameMap gameMap) {
         for (int ROW = MAP_SIZE; ROW >= 1; ROW--) {
@@ -22,21 +22,20 @@ public class Simulation {
     public void initStartAction(GameMap gameMap, HashSet rabits, HashSet wolfs) {
         Random random = new Random();
 
-        int COLUMN = random.nextInt(MAP_SIZE) + 1;
-        int ROW = random.nextInt(MAP_SIZE) + 1;
-        int COLUMN2 = random.nextInt(MAP_SIZE) + 1;
-        int ROW2 = random.nextInt(MAP_SIZE) + 1;
-        int COLUMN3 = random.nextInt(MAP_SIZE) + 1;
-        int ROW3 = random.nextInt(MAP_SIZE) + 1;
-        int COLUMN4 = random.nextInt(MAP_SIZE) + 1;
-        int ROW4 = random.nextInt(MAP_SIZE) + 1;
-        int COLUMN5 = random.nextInt(MAP_SIZE) + 1;
-        int ROW5 = random.nextInt(MAP_SIZE) + 1;
-        int COLUMN6 = random.nextInt(MAP_SIZE) + 1;
-        int ROW6 = random.nextInt(MAP_SIZE) + 1;
-        int COLUMN7 = random.nextInt(MAP_SIZE) + 1;
-        int ROW7 = random.nextInt(MAP_SIZE) + 1;
-
+        int COLUMN = random.nextInt(MAP_SIZE);
+        int ROW = random.nextInt(MAP_SIZE);
+        int COLUMN2 = random.nextInt(MAP_SIZE);
+        int ROW2 = random.nextInt(MAP_SIZE);
+        int COLUMN3 = random.nextInt(MAP_SIZE);
+        int ROW3 = random.nextInt(MAP_SIZE);
+        int COLUMN4 = random.nextInt(MAP_SIZE);
+        int ROW4 = random.nextInt(MAP_SIZE);
+        int COLUMN5 = random.nextInt(MAP_SIZE);
+        int ROW5 = random.nextInt(MAP_SIZE);
+        int COLUMN6 = random.nextInt(MAP_SIZE);
+        int ROW6 = random.nextInt(MAP_SIZE);
+        int COLUMN7 = random.nextInt(MAP_SIZE);
+        int ROW7 = random.nextInt(MAP_SIZE);
 
         Grass grass2 = new Grass(new Coordinates(ROW, COLUMN));
         Grass grass3 = new Grass(new Coordinates(ROW2, COLUMN2));
@@ -71,7 +70,10 @@ public class Simulation {
         GameMap gameMap = new GameMap();
         HashSet<Herbivore> herbivores = new HashSet<>();
         HashSet<Predator> wolfs = new HashSet<>();
-
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Введите размер карты от 10 до 30");
+        int razmer= sc.nextInt();
+        MAP_SIZE=razmer;
         initStartAction(gameMap, herbivores, wolfs);
 
         int turnCount = 0;
@@ -82,20 +84,21 @@ public class Simulation {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+
+
             turnCount++;
 
             turnActions(turnCount, gameMap, herbivores, wolfs);
 
             System.out.println(turnCount);
         }
-
     }
 
 
     public void herbivoresMakeActions(int turnCount, GameMap gameMap, HashSet<Herbivore> herbivores) {
         Random random = new Random();
-        int COLUMN = random.nextInt(MAP_SIZE) + 1;
-        int ROW = random.nextInt(MAP_SIZE) + 1;
+        int COLUMN = random.nextInt(MAP_SIZE);
+        int ROW = random.nextInt(MAP_SIZE);
 
         int[][] nearestCootdinates = {
                 {+1, +0}, {+0, -1}, {+1, +1}, {+1, -1},
@@ -124,17 +127,17 @@ public class Simulation {
             }
         }
         for (Herbivore rabit : herbivores) {
-            Coordinates rabitTarget = breadthFirstSearch(rabit, gameMap);
-            rabit.makeMove(rabit, rabitTarget, gameMap);
-            rabit.eatGrass(rabitTarget, rabit.getCoordinates(), gameMap);
+            List rabitTarget = breadthFirstSearch(rabit, gameMap);
+            rabit.makeMove(rabit, breadthFirstSearch(rabit, gameMap), gameMap);
+            rabit.eatGrass(rabitTarget, rabit, gameMap);
         }
     }
 
     public void predatorsMakeActions(GameMap gameMap, HashSet<Predator> predators, HashSet<Herbivore> rabits) {
         for (Predator wolf : predators) {
-            Coordinates predatorTarget = breadthFirstSearch(wolf, gameMap);
-            wolf.makeMove(wolf, predatorTarget, gameMap);
-            wolf.eatHerbivore(predatorTarget, wolf.getCoordinates(), gameMap, rabits);
+            List predatorTarget = breadthFirstSearch(wolf, gameMap);
+            wolf.makeMove(wolf, breadthFirstSearch(wolf, gameMap),gameMap);
+            wolf.eatHerbivore(predatorTarget,wolf, gameMap, rabits);
         }
     }
 
@@ -171,16 +174,18 @@ public class Simulation {
 
     }
 
-    public Coordinates breadthFirstSearch(Entity creature, GameMap map) {
-        Map<Coordinates,Coordinates> hui= new HashMap<>();
-
+    public List<Coordinates>  breadthFirstSearch(Entity creature, GameMap map) {
+        Map<Coordinates, Coordinates> parents = new HashMap<>();
+        List<Coordinates> spisokKoord = new ArrayList<>();
         LinkedList<Coordinates> queue = new LinkedList<>();
         int[][] directions = {
                 {+1, +0}, {+0, -1}, {+1, +1}, {+1, -1},
                 {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
         };
 
-        queue.add(new Coordinates(creature.getCoordinates().getCOLUMN(), creature.getCoordinates().getROW()));
+        Coordinates checkCoordinates1 = new Coordinates(creature.getCoordinates().getCOLUMN(), creature.getCoordinates().getROW());
+        queue.add(checkCoordinates1);
+        parents.put(checkCoordinates1, checkCoordinates1);
 
         HashSet<Coordinates> visited = new HashSet<>();
         Coordinates targetCoordinates = new Coordinates(0, 0);
@@ -188,30 +193,50 @@ public class Simulation {
 
             Coordinates nextCoordinates = queue.removeFirst();
 
-            boolean checkBorderMap = nextCoordinates.getCOLUMN() < 15 && nextCoordinates.getCOLUMN() > 0 && nextCoordinates.getROW() < 15 && nextCoordinates.getROW() > 0;
-            if (checkBorderMap) {
-                if (map.emptyCoordainates(nextCoordinates) && creature instanceof Herbivore && map.getEntyty(nextCoordinates) instanceof Grass) {
-                    targetCoordinates = new Coordinates(nextCoordinates.getCOLUMN(), nextCoordinates.getROW());
-                    break;
-                }
-                if (map.emptyCoordainates(nextCoordinates) && creature instanceof Predator && map.getEntyty(nextCoordinates) instanceof Herbivore) {
-                    targetCoordinates = new Coordinates(nextCoordinates.getCOLUMN(), nextCoordinates.getROW());
-                    break;
-                } else {
-                    visited.add(nextCoordinates);
+            if (!(map.getEntyty(nextCoordinates) instanceof Stone)) {
+                boolean checkBorderMap = nextCoordinates.getCOLUMN() < MAP_SIZE && nextCoordinates.getCOLUMN() > 0 && nextCoordinates.getROW() < MAP_SIZE && nextCoordinates.getROW() > 0;
+                if (checkBorderMap) {
+                    if (map.emptyCoordainates(nextCoordinates) && creature instanceof Herbivore && map.getEntyty(nextCoordinates) instanceof Grass) {
+                        targetCoordinates = new Coordinates(nextCoordinates.getCOLUMN(), nextCoordinates.getROW());
+                        spisokKoord = putb(parents, targetCoordinates, checkCoordinates1);
+                        break;
+                    }
+                    if (map.emptyCoordainates(nextCoordinates) && creature instanceof Predator && map.getEntyty(nextCoordinates) instanceof Herbivore) {
+                        targetCoordinates = new Coordinates(nextCoordinates.getCOLUMN(), nextCoordinates.getROW());
+                        spisokKoord = putb(parents, targetCoordinates, checkCoordinates1);
+                        break;
+                    } else {
+                        visited.add(nextCoordinates);
 
-                    for (int i = 0; i < directions.length; i++) {
-                        int newRow = directions[i][1];
-                        int newCol = directions[i][0];
-                        Coordinates temp = new Coordinates(nextCoordinates.getCOLUMN() + newCol, nextCoordinates.getROW() + newRow);
-                        if (!visited.contains(temp)) {
-                            queue.add(temp);
+                        for (int i = 0; i < directions.length; i++) {
+                            int newRow = directions[i][1];
+                            int newCol = directions[i][0];
+                            Coordinates neighbor = new Coordinates(nextCoordinates.getCOLUMN() + newCol, nextCoordinates.getROW() + newRow);
+                            if (!visited.contains(neighbor)) {
+                                queue.add(neighbor);
+                                visited.add(neighbor);
+                                parents.put(neighbor, nextCoordinates);
+                            }
                         }
                     }
                 }
             }
         }
-        return targetCoordinates;
+        return spisokKoord;
+    }
+
+
+    public List<Coordinates> putb(Map<Coordinates, Coordinates> parents, Coordinates targetCoordinates, Coordinates startCoordinates) {
+        List<Coordinates> path = new ArrayList<>();
+        Coordinates current = targetCoordinates;
+
+        while (current != null && !current.equals(startCoordinates)) {
+            path.add(current);
+            current = parents.get(current);
+        }
+        Collections.reverse(path);
+        path.add(startCoordinates);
+        return path;
     }
 
     public HashMap<Coordinates, Entity> nextTurn(Map<Coordinates, Entity> map) {

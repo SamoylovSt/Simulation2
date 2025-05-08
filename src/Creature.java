@@ -1,3 +1,5 @@
+import java.util.List;
+
 abstract public class Creature extends Entity {
     private String color;
     private Coordinates coordinates;
@@ -19,7 +21,7 @@ abstract public class Creature extends Entity {
     public Coordinates setCoordinates(Coordinates coordinates) {
         return this.coordinates = coordinates;
     }
-    public void makeMove(Creature creature, Coordinates targetCoordinates, GameMap gameMap){}
+    public void makeMove(Creature creature, Coordinates targetCoordinates, GameMap gameMap){}//GameMap gameMap
 
 //    public void makeMove(Creature creature, Coordinates targetCoordinates, GameMap gameMap) {
 //        int nextColumn = (int) Math.signum(targetCoordinates.getCOLUMN() - creature.getCoordinates().getCOLUMN());

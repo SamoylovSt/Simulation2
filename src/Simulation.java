@@ -18,82 +18,61 @@ public class Simulation {
         }
     }
 
-
     public void initStartAction(GameMap gameMap, HashSet rabits, HashSet wolfs) {
         Random random = new Random();
-
-        int COLUMN = random.nextInt(MAP_SIZE);
-        int ROW = random.nextInt(MAP_SIZE);
-        int COLUMN2 = random.nextInt(MAP_SIZE);
-        int ROW2 = random.nextInt(MAP_SIZE);
-        int COLUMN3 = random.nextInt(MAP_SIZE);
-        int ROW3 = random.nextInt(MAP_SIZE);
-        int COLUMN4 = random.nextInt(MAP_SIZE);
-        int ROW4 = random.nextInt(MAP_SIZE);
-        int COLUMN5 = random.nextInt(MAP_SIZE);
-        int ROW5 = random.nextInt(MAP_SIZE);
-        int COLUMN6 = random.nextInt(MAP_SIZE);
-        int ROW6 = random.nextInt(MAP_SIZE);
-        int COLUMN7 = random.nextInt(MAP_SIZE);
-        int ROW7 = random.nextInt(MAP_SIZE);
-
-        Grass grass2 = new Grass(new Coordinates(ROW, COLUMN));
-        Grass grass3 = new Grass(new Coordinates(ROW2, COLUMN2));
-        gameMap.setEntyty(grass2.getCoordinates(), grass2);
-        gameMap.setEntyty(grass3.getCoordinates(), grass3);
-
-        Stone rock = new Stone(new Coordinates(COLUMN3, ROW3));
-        Stone rock1 = new Stone(new Coordinates(COLUMN4, ROW4));
-        Stone rock2 = new Stone(new Coordinates(COLUMN5, ROW5));
-        gameMap.setEntyty(rock.getCoordinates(), rock);
-        gameMap.setEntyty(rock1.getCoordinates(), rock1);
-        gameMap.setEntyty(rock2.getCoordinates(), rock2);
-
-        Herbivore herbivore1 = new Herbivore(new Coordinates(COLUMN6, ROW6));
-        gameMap.setEntyty(herbivore1.getCoordinates(), herbivore1);
-        rabits.add(herbivore1);
-
-        Predator predator = new Predator(new Coordinates(COLUMN7, ROW7));
-        gameMap.setEntyty(predator.getCoordinates(), predator);
-        wolfs.add(predator);
+        for (int i = 0; i < 7; i++) {
+            int COLUMN = random.nextInt(MAP_SIZE);
+            int ROW = random.nextInt(MAP_SIZE);
+            Stone rock = new Stone(new Coordinates(COLUMN, ROW));
+            gameMap.setEntyty(rock.getCoordinates(), rock);
+            if (i % 2 == 0) {
+                Grass grass2 = new Grass(new Coordinates(ROW, COLUMN));
+                gameMap.setEntyty(grass2.getCoordinates(), grass2);
+            } else if (i == 1) {
+                Predator predator = new Predator(new Coordinates(COLUMN, ROW));
+                gameMap.setEntyty(predator.getCoordinates(), predator);
+                wolfs.add(predator);
+            } else if (i == 5) {
+                Herbivore herbivore1 = new Herbivore(new Coordinates(COLUMN+1, ROW));
+                gameMap.setEntyty(herbivore1.getCoordinates(), herbivore1);
+                rabits.add(herbivore1);
+            }
+        }
     }
 
     public void turnActions(int turnCount, GameMap gameMap, HashSet rabits, HashSet wolfs) {
         setRandomEntity(gameMap, turnCount);
+
         render(gameMap);
-        predatorsMakeActions(gameMap, wolfs, rabits);
         gameMap.reMap(nextTurn(gameMap.map));
+        predatorsMakeActions(gameMap, wolfs, rabits,wolfs);
         herbivoresMakeActions(turnCount, gameMap, rabits);
+
+
     }
 
     public void startSimulation() {
         GameMap gameMap = new GameMap();
         HashSet<Herbivore> herbivores = new HashSet<>();
         HashSet<Predator> wolfs = new HashSet<>();
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Введите размер карты от 10 до 30");
-        int razmer= sc.nextInt();
-        MAP_SIZE=razmer;
+//        Scanner sc = new Scanner(System.in);
+//        System.out.println("Введите размер карты от 10 до 10");
+//        int razmer= sc.nextInt();
+//        MAP_SIZE=razmer;
         initStartAction(gameMap, herbivores, wolfs);
-
         int turnCount = 0;
-        int interval = 700;
+        int interval = 300;
         while (true) {
             try {
                 Thread.sleep(interval);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-
-
             turnCount++;
-
             turnActions(turnCount, gameMap, herbivores, wolfs);
-
             System.out.println(turnCount);
         }
     }
-
 
     public void herbivoresMakeActions(int turnCount, GameMap gameMap, HashSet<Herbivore> herbivores) {
         Random random = new Random();
@@ -118,7 +97,7 @@ public class Simulation {
                 } else {
                     clearCootdCount = 0;
                 }
-                if (clearCootdCount == 8) {
+                if (clearCootdCount == 8 ) {
                     Herbivore newRabit = new Herbivore(new Coordinates(COLUMN, ROW));
                     gameMap.setEntyty(new Coordinates(COLUMN, ROW), newRabit);
                     herbivores.add(newRabit);
@@ -133,11 +112,11 @@ public class Simulation {
         }
     }
 
-    public void predatorsMakeActions(GameMap gameMap, HashSet<Predator> predators, HashSet<Herbivore> rabits) {
+    public void predatorsMakeActions(GameMap gameMap, HashSet<Predator> predators, HashSet<Herbivore> rabits, HashSet<Predator> wolfs) {
         for (Predator wolf : predators) {
             List predatorTarget = breadthFirstSearch(wolf, gameMap);
-            wolf.makeMove(wolf, breadthFirstSearch(wolf, gameMap),gameMap);
-            wolf.eatHerbivore(predatorTarget,wolf, gameMap, rabits);
+            wolf.makeMove(wolf, breadthFirstSearch(wolf, gameMap), gameMap);
+            wolf.eatHerbivore(predatorTarget, wolf, gameMap, rabits);
         }
     }
 
@@ -178,6 +157,7 @@ public class Simulation {
         Map<Coordinates, Coordinates> parents = new HashMap<>();
         List<Coordinates> spisokKoord = new ArrayList<>();
         LinkedList<Coordinates> queue = new LinkedList<>();
+
         int[][] directions = {
                 {+1, +0}, {+0, -1}, {+1, +1}, {+1, -1},
                 {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
@@ -197,13 +177,13 @@ public class Simulation {
                 boolean checkBorderMap = nextCoordinates.getCOLUMN() < MAP_SIZE && nextCoordinates.getCOLUMN() > 0 && nextCoordinates.getROW() < MAP_SIZE && nextCoordinates.getROW() > 0;
                 if (checkBorderMap) {
                     if (map.emptyCoordainates(nextCoordinates) && creature instanceof Herbivore && map.getEntyty(nextCoordinates) instanceof Grass) {
-                        targetCoordinates = new Coordinates(nextCoordinates.getCOLUMN(), nextCoordinates.getROW());
-                        spisokKoord = putb(parents, targetCoordinates, checkCoordinates1);
+                         targetCoordinates = new Coordinates(nextCoordinates.getCOLUMN(), nextCoordinates.getROW());
+                        spisokKoord = getWay(parents, targetCoordinates, checkCoordinates1);
                         break;
                     }
                     if (map.emptyCoordainates(nextCoordinates) && creature instanceof Predator && map.getEntyty(nextCoordinates) instanceof Herbivore) {
                         targetCoordinates = new Coordinates(nextCoordinates.getCOLUMN(), nextCoordinates.getROW());
-                        spisokKoord = putb(parents, targetCoordinates, checkCoordinates1);
+                        spisokKoord = getWay(parents, targetCoordinates, checkCoordinates1);
                         break;
                     } else {
                         visited.add(nextCoordinates);
@@ -212,6 +192,10 @@ public class Simulation {
                             int newRow = directions[i][1];
                             int newCol = directions[i][0];
                             Coordinates neighbor = new Coordinates(nextCoordinates.getCOLUMN() + newCol, nextCoordinates.getROW() + newRow);
+                           if(queue.size()>9){
+                                //ограничение области поиска
+                               break;
+                           }
                             if (!visited.contains(neighbor)) {
                                 queue.add(neighbor);
                                 visited.add(neighbor);
@@ -225,8 +209,7 @@ public class Simulation {
         return spisokKoord;
     }
 
-
-    public List<Coordinates> putb(Map<Coordinates, Coordinates> parents, Coordinates targetCoordinates, Coordinates startCoordinates) {
+    public List<Coordinates> getWay(Map<Coordinates, Coordinates> parents, Coordinates targetCoordinates, Coordinates startCoordinates) {
         List<Coordinates> path = new ArrayList<>();
         Coordinates current = targetCoordinates;
 

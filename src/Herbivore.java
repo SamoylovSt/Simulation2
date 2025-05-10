@@ -3,11 +3,14 @@ import java.util.List;
 public class Herbivore extends Creature {
     private final String color;
     private Coordinates coordinates;
+    private int hp;
 
     public Herbivore(Coordinates coordinates) {
         this.coordinates = coordinates;
         this.color = Sprites.HERBIVORE_COLOR;
+        this.hp=4;
     }
+
 
     @Override
     public String getColor() {

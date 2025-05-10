@@ -44,7 +44,12 @@ public class Predator extends Creature {
        if (putb != null) {
            try {
                Coordinates temp = putb.get(0);
-               creature.setCoordinates(new Coordinates(temp.getCOLUMN(), temp.getROW()));
+               if(gameMap.getEntyty(temp) instanceof  Grass){
+                   creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN(), creature.getCoordinates().getROW()));
+               }else {
+                   creature.setCoordinates(new Coordinates(temp.getCOLUMN(), temp.getROW()));
+               }
+
            }catch (IndexOutOfBoundsException e){
                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN(), creature.getCoordinates().getROW()));
            }

@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Simulation {
-    public static int MAP_SIZE = 15;
+    public static int MAP_SIZE = 10;
 
     public void render(GameMap gameMap) {
         for (int ROW = MAP_SIZE; ROW >= 1; ROW--) {
@@ -20,9 +20,9 @@ public class Simulation {
 
     public void initStartAction(GameMap gameMap, HashSet rabits, HashSet wolfs) {
         Random random = new Random();
-        for (int i = 0; i < 7; i++) {
-            int COLUMN = random.nextInt(MAP_SIZE);
-            int ROW = random.nextInt(MAP_SIZE);
+        for (int i = 0; i < MAP_SIZE/2; i++) {
+            int COLUMN = random.nextInt(MAP_SIZE)+1;
+            int ROW = random.nextInt(MAP_SIZE)+1;
             Stone rock = new Stone(new Coordinates(COLUMN, ROW));
             gameMap.setEntyty(rock.getCoordinates(), rock);
             if (i % 2 == 0) {
@@ -33,7 +33,7 @@ public class Simulation {
                 gameMap.setEntyty(predator.getCoordinates(), predator);
                 wolfs.add(predator);
             } else if (i == 5) {
-                Herbivore herbivore1 = new Herbivore(new Coordinates(COLUMN+1, ROW));
+                Herbivore herbivore1 = new Herbivore(new Coordinates(COLUMN, ROW));
                 gameMap.setEntyty(herbivore1.getCoordinates(), herbivore1);
                 rabits.add(herbivore1);
             }
@@ -41,27 +41,22 @@ public class Simulation {
     }
 
     public void turnActions(int turnCount, GameMap gameMap, HashSet rabits, HashSet wolfs) {
-        setRandomEntity(gameMap, turnCount);
-
+        setRandomGrass(gameMap, turnCount);
+        predatorsMakeActions(gameMap, wolfs, rabits,wolfs);
         render(gameMap);
         gameMap.reMap(nextTurn(gameMap.map));
-        predatorsMakeActions(gameMap, wolfs, rabits,wolfs);
+
         herbivoresMakeActions(turnCount, gameMap, rabits);
-
-
     }
 
     public void startSimulation() {
         GameMap gameMap = new GameMap();
         HashSet<Herbivore> herbivores = new HashSet<>();
         HashSet<Predator> wolfs = new HashSet<>();
-//        Scanner sc = new Scanner(System.in);
-//        System.out.println("Введите размер карты от 10 до 10");
-//        int razmer= sc.nextInt();
-//        MAP_SIZE=razmer;
+
         initStartAction(gameMap, herbivores, wolfs);
         int turnCount = 0;
-        int interval = 300;
+        int interval = 400;
         while (true) {
             try {
                 Thread.sleep(interval);
@@ -76,39 +71,18 @@ public class Simulation {
 
     public void herbivoresMakeActions(int turnCount, GameMap gameMap, HashSet<Herbivore> herbivores) {
         Random random = new Random();
-        int COLUMN = random.nextInt(MAP_SIZE);
-        int ROW = random.nextInt(MAP_SIZE);
-
-        int[][] nearestCootdinates = {
-                {+1, +0}, {+0, -1}, {+1, +1}, {+1, -1},
-                {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
-        };
-        int clearCootdCount = 0;
-        if (turnCount % 3 == 0) {
-            for (int i = 0; i < nearestCootdinates.length; i++) {
-                int newRow = nearestCootdinates[i][1];
-                int newCol = nearestCootdinates[i][0];
-
-                Coordinates checkEmptyCoordinates1 = new Coordinates(ROW + newCol, COLUMN + newRow);
-                Coordinates checkEmptyCoordinates2 = new Coordinates(ROW, COLUMN);
-                if (!gameMap.emptyCoordainates(checkEmptyCoordinates1) &&
-                        !gameMap.emptyCoordainates(checkEmptyCoordinates2)) {
-                    clearCootdCount++;
-                } else {
-                    clearCootdCount = 0;
-                }
-                if (clearCootdCount == 8 ) {
-                    Herbivore newRabit = new Herbivore(new Coordinates(COLUMN, ROW));
-                    gameMap.setEntyty(new Coordinates(COLUMN, ROW), newRabit);
-                    herbivores.add(newRabit);
-                    clearCootdCount = 0;
-                }
-            }
+        int COLUMN = random.nextInt(MAP_SIZE) + 1;
+        int ROW = random.nextInt(MAP_SIZE) + 1;
+        boolean checkStartEmptyCoordinatesForSetRabit = gameMap.emptyCoordainates(new Coordinates(COLUMN, ROW));
+        if (turnCount % 5 == 0 && !checkStartEmptyCoordinatesForSetRabit) {
+            Herbivore newRabit = new Herbivore(new Coordinates(COLUMN, ROW));
+            gameMap.setEntyty(new Coordinates(COLUMN, ROW), newRabit);
+            herbivores.add(newRabit);
         }
         for (Herbivore rabit : herbivores) {
-            List rabitTarget = breadthFirstSearch(rabit, gameMap);
-            rabit.makeMove(rabit, breadthFirstSearch(rabit, gameMap), gameMap);
-            rabit.eatGrass(rabitTarget, rabit, gameMap);
+              List rabitTarget = breadthFirstSearch(rabit, gameMap);
+              rabit.makeMove(rabit, rabitTarget, gameMap);
+              rabit.eatGrass(rabitTarget, rabit, gameMap);
         }
     }
 
@@ -120,7 +94,7 @@ public class Simulation {
         }
     }
 
-    public void setRandomEntity(GameMap gameMap, int turtcount) {
+    public void setRandomGrass(GameMap gameMap, int turtcount) {
         Random random = new Random();
         int x = random.nextInt(MAP_SIZE) + 1;
         int y = random.nextInt(MAP_SIZE) + 1;
@@ -174,7 +148,7 @@ public class Simulation {
             Coordinates nextCoordinates = queue.removeFirst();
 
             if (!(map.getEntyty(nextCoordinates) instanceof Stone)) {
-                boolean checkBorderMap = nextCoordinates.getCOLUMN() < MAP_SIZE && nextCoordinates.getCOLUMN() > 0 && nextCoordinates.getROW() < MAP_SIZE && nextCoordinates.getROW() > 0;
+                boolean checkBorderMap = nextCoordinates.getCOLUMN() <= MAP_SIZE && nextCoordinates.getCOLUMN() > 0 && nextCoordinates.getROW() <= MAP_SIZE && nextCoordinates.getROW() > 0;
                 if (checkBorderMap) {
                     if (map.emptyCoordainates(nextCoordinates) && creature instanceof Herbivore && map.getEntyty(nextCoordinates) instanceof Grass) {
                          targetCoordinates = new Coordinates(nextCoordinates.getCOLUMN(), nextCoordinates.getROW());
@@ -192,10 +166,9 @@ public class Simulation {
                             int newRow = directions[i][1];
                             int newCol = directions[i][0];
                             Coordinates neighbor = new Coordinates(nextCoordinates.getCOLUMN() + newCol, nextCoordinates.getROW() + newRow);
-                           if(queue.size()>9){
-                                //ограничение области поиска
-                               break;
-                           }
+//                            if (queue.size() > 5) {
+//                                break;
+//                            }
                             if (!visited.contains(neighbor)) {
                                 queue.add(neighbor);
                                 visited.add(neighbor);
@@ -205,6 +178,7 @@ public class Simulation {
                     }
                 }
             }
+
         }
         return spisokKoord;
     }

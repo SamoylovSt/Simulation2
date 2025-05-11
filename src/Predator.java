@@ -29,8 +29,7 @@ public class Predator extends Creature {
     public void eatHerbivore(List<Coordinates> putb, Creature creature, GameMap gameMap, HashSet<Herbivore> rabits) {
         if (putb != null) {
             try {
-                if(gameMap.getEntyty(putb.get(0))instanceof Herbivore && creature.getCoordinates().equals(putb.get(0))){
-
+                if(gameMap.getEntyty(putb.get(0))instanceof Herbivore ){//&& creature.getCoordinates().equals(putb.get(0))
                     gameMap.deleteEntyty(putb.get(0));
                     rabits.remove(gameMap.getEntyty(putb.get(0)));
                 }

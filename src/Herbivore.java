@@ -29,11 +29,11 @@ public class Herbivore extends Creature {
     public void eatGrass(List<Coordinates> putb, Creature creature, GameMap gameMap) {
         if (putb != null) {
             try {
-                if (gameMap.getEntyty(putb.get(0)) instanceof Grass && creature.getCoordinates().equals(putb.get(0))) {
+                if (gameMap.getEntyty(putb.get(0)) instanceof Grass) {// && creature.getCoordinates().equals(putb.get(0))
                     gameMap.deleteEntyty(putb.get(0));
                 }
             } catch (IndexOutOfBoundsException e) {
-                creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN(), creature.getCoordinates().getROW()));
+                 creature.setCoordinates(new Coordinates(creature.getCoordinates().getCOLUMN(), creature.getCoordinates().getROW()));
             }
         }
     }

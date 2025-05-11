@@ -56,7 +56,7 @@ public class Simulation {
 
         initStartAction(gameMap, herbivores, wolfs);
         int turnCount = 0;
-        int interval = 400;
+        int interval = 700;
         while (true) {
             try {
                 Thread.sleep(interval);
@@ -80,9 +80,9 @@ public class Simulation {
             herbivores.add(newRabit);
         }
         for (Herbivore rabit : herbivores) {
-              List rabitTarget = breadthFirstSearch(rabit, gameMap);
-              rabit.makeMove(rabit, rabitTarget, gameMap);
-              rabit.eatGrass(rabitTarget, rabit, gameMap);
+            List rabitTarget = breadthFirstSearch(rabit, gameMap);
+            rabit.makeMove(rabit, rabitTarget, gameMap);
+            rabit.eatGrass(rabitTarget, rabit, gameMap);
         }
     }
 
@@ -91,6 +91,7 @@ public class Simulation {
             List predatorTarget = breadthFirstSearch(wolf, gameMap);
             wolf.makeMove(wolf, breadthFirstSearch(wolf, gameMap), gameMap);
             wolf.eatHerbivore(predatorTarget, wolf, gameMap, rabits);
+            break;
         }
     }
 
@@ -104,13 +105,13 @@ public class Simulation {
                 {+0, +1}, {-1, +1}, {-1, +0}, {-1, -1}
         };
         int clearCootdCount = 0;
-        if (turtcount % 2  == 0) {
+        if (turtcount % 2 == 0) {
             for (int i = 0; i < nearestCootdinates.length; i++) {
                 int newRow = nearestCootdinates[i][1];
                 int newCol = nearestCootdinates[i][0];
 
                 if (!gameMap.emptyCoordainates(new Coordinates(x + newCol, y + newRow)) &&
-                        !gameMap.emptyCoordainates(new Coordinates(x, y))) {
+                       ! gameMap.emptyCoordainates(new Coordinates(x, y))) {
 
                     clearCootdCount++;
 
@@ -127,7 +128,7 @@ public class Simulation {
 
     }
 
-    public List<Coordinates>  breadthFirstSearch(Entity creature, GameMap map) {
+    public List<Coordinates> breadthFirstSearch(Entity creature, GameMap map) {
         Map<Coordinates, Coordinates> parents = new HashMap<>();
         List<Coordinates> spisokKoord = new ArrayList<>();
         LinkedList<Coordinates> queue = new LinkedList<>();
